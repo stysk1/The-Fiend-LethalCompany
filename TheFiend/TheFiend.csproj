@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- MUST stay "TheFiend": the prebuilt AssetBundle references the AI script by this assembly name. -->
+    <AssemblyName>TheFiend</AssemblyName>
+    <Product>The Fiend</Product>
+    <Version>2.0.0</Version>
+
+    <!-- Embed debug symbols (also keeps the netcode patcher happy). -->
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+
+    <!-- CS0436: type clashes from publicized reference assemblies; harmless. -->
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="LethalCompany.GameLibs.Steam" Version="81.0.5-ngd.0" PrivateAssets="all" />
+    <PackageReference Include="Evaisa.LethalLib" Version="1.1.1" />
+  </ItemGroup>
+
+  <!-- Ship the prebuilt Unity AssetBundle next to the output DLL. -->
+  <ItemGroup>
+    <None Include="Bundles/thefiend" CopyToOutputDirectory="PreserveNewest" Link="thefiend" />
+  </ItemGroup>
+
+  <!-- Restore local dotnet tools (netcode-patch) before patching. -->
+  <Target Name="RestoreTools" BeforeTargets="NetcodePatch">
+    <Exec Command="dotnet tool restore" />
+  </Target>
+
+  <!-- Reinject Unity Netcode RPC/NetworkVariable plumbing post-build.
+       Targeting netcode 1.12.0 is the fix for the v73 NGO upgrade that broke the original build. -->
+  <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet netcode-patch -uv 2022.3.62 -nv 1.12.0 -tv 1.0.0 &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
+  </Target>
+
+</Project>

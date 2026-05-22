@@ -1,0 +1,10 @@
+{
+  "name": "The_Fiend",
+  "version_number": "2.0.0",
+  "website_url": "",
+  "description": "A demonic custom enemy from the game Rinse and Repeat, ported to Lethal Company. The Fiend hides on walls, breaks doors, flickers lights, and hunts you down. Rebuilt from source for the current game version.",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100",
+    "Evaisa-LethalLib-1.1.1"
+  ]
+}

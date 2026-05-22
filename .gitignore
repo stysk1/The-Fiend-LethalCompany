@@ -1,0 +1,16 @@
+# Build output
+bin/
+obj/
+dist/
+
+# IDE / editor
+.vs/
+*.user
+*.suo
+
+# Reference material kept locally but excluded from the repo:
+#   - source.txt: the decompiled dump the rebuild was authored from
+#   - Rolevote-The_Fiend-1.0.7/: the original shipped Thunderstore package
+# (The AssetBundle and icon were already copied into TheFiend/Bundles and thunderstore/.)
+source.txt
+Rolevote-The_Fiend-1.0.7/
