@@ -38,9 +38,14 @@
   </Target>
 
   <!-- Reinject Unity Netcode RPC/NetworkVariable plumbing post-build.
-       Targeting netcode 1.12.0 is the fix for the v73 NGO upgrade that broke the original build. -->
+       Targeting netcode 1.12.0 is the fix for the v73 NGO upgrade that broke the original build.
+       We pass dependency DIRECTORIES (deduped) rather than every reference DLL: the inline file
+       list is ~18 KB and overruns the Windows command-length limit on CI runners. -->
   <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet netcode-patch -uv 2022.3.62 -nv 1.12.0 -tv 1.0.0 &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
+    <ItemGroup>
+      <NetcodePatchDepDir Include="@(ReferencePathWithRefAssemblies->'%(RootDir)%(Directory)'->Distinct())" />
+    </ItemGroup>
+    <Exec Command="dotnet netcode-patch -uv 2022.3.62 -nv 1.12.0 -tv 1.0.0 &quot;$(TargetPath)&quot; @(NetcodePatchDepDir->'&quot;%(Identity).&quot;', ' ')" />
   </Target>
 
 </Project>
